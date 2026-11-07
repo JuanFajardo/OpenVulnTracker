@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Servidor Web / Aplicación Laravel
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laravel-vulntracker
+    container_name: vulntracker-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    # network_mode: "host" permite que '127.0.0.1' apunte directamente a MariaDB
+    network_mode: "host"
+    depends_on:
+      - db
+
+  # Base de datos MariaDB
+  db:
+    image: mariadb:10.11
+    container_name: vulntracker-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: vulntracker
+      MYSQL_ROOT_PASSWORD: toor
+    # Mapea el puerto al host para que responda en 127.0.0.1:3306
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:
