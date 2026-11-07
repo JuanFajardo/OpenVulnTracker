@@ -1,6 +1,5 @@
 FROM php:8.2-fpm
 
-# Instalar dependencias del sistema y extensiones de PHP necesarias para Laravel
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -11,26 +10,22 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     mariadb-client \
+    nodejs \
+    npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalar extensiones de PHP
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Configurar el directorio de trabajo
 WORKDIR /var/www
 
-# Copiar el código del proyecto
 COPY . .
 
-# Instalar dependencias de Laravel
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Ajustar permisos para Laravel
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-EXPOSE 9000
+EXPOSE 80
 
-CMD ["php-fpm"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=80"]

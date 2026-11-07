@@ -35,6 +35,19 @@ Dashboard centralizado para la gestión y visualización de vulnerabilidades de 
 ---
 
 ## Instalación
+### 0. Montar en un contendor
+```
+docker-compose up -d --build
+
+docker-compose exec app npm install && docker-compose exec app npm run build
+
+docker-compose exec app composer install
+
+docker-compose exec app php artisan migrate
+
+docker-compose exec app php artisan db:seed
+
+```
 
 ### 1. Clonar o copiar el proyecto
 
